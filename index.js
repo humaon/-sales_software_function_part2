@@ -17,7 +17,7 @@ const discountsData = loadDataFromFile("discounts.json");
 function calculateSalesSummary(products, orders, discounts) {
   let totalSalesBeforeDiscount = 0;
   let totalDiscountAmount = 0;
-
+  let totalDiscountPercentage = 0;
   orders.forEach((order) => {
     let orderDiscountAmount = 0;
     const appliedDiscounts = order?.discount ? order.discount.split(",") : [];
@@ -28,6 +28,7 @@ function calculateSalesSummary(products, orders, discounts) {
         orderDiscountAmount += discount.value;
       }
     });
+    totalDiscountPercentage += orderDiscountAmount;
 
     order.items.forEach((item) => {
       const product = products.find((prod) => prod.sku === item.sku);
@@ -41,9 +42,7 @@ function calculateSalesSummary(products, orders, discounts) {
 
   const totalCustomers = orders.length;
   const averageDiscountPercentage =
-    totalCustomers > 0
-      ? (totalDiscountAmount / totalCustomers / totalSalesBeforeDiscount) * 100
-      : 0;
+    totalCustomers > 0 ? (totalDiscountPercentage * 100) / totalCustomers : 0;
 
   const totalSalesAfterDiscount =
     totalSalesBeforeDiscount - totalDiscountAmount;
